@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Embedded Widget Example</title>
+</head>
+<body>
+  <h2>Widget Embedded in a Div</h2>
+  <div id="my-widget-container" style="width:800px;min-height:500px;height:500px;border:1px solid #ccc;"></div>
+
+  <script type="module">
+    import widgetCssUrl from './src/widget.css?url';
+
+    let widgetConfig = {
+      //minimized: true,
+      css_url: widgetCssUrl,
+      target: '#my-widget-container',
+      //globalName: 'SST',
+      embedding: true, // custom flag for clarity (optional)
+      header: true, // disable header
+      footer: false, // disable footer
+      defaultAssistantMessage: {
+        content: 'Hello! How can I help you?',
+        actions: [
+          {
+            type: 'question',
+            text: 'How to create new AI Model?'
+          }
+        ]
+      },
+      model: 'ai-model',
+    };
+
+    (function (w, d, s, o, f, js, fjs) {
+      w[o] = w[o] || function () { (w[o].q = w[o].q || []).push(arguments) };
+      js = d.createElement(s), fjs = d.getElementsByTagName(s)[0];
+      js.id = o; js.src = f; js.async = 1; js.type = 'module'; fjs.parentNode.insertBefore(js, fjs);
+    }(window, document, 'script', 'SST', '/src/main.js'));
+    SST('init', widgetConfig);
+
+  </script>
+</body>
+</html>
