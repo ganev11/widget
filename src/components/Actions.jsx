@@ -12,11 +12,11 @@ export function Actions({ messages, send }) {
 	return (
 		<>
 		{(actions.length > 0 &&
-			<>
+			<div class="hw-msg actions">
 				{actions.map((action, i) => (
 					<Action key={i} action={action} send={send} />
 				))}
-			</>
+			</div>
 		)}
 		</>
 	);
