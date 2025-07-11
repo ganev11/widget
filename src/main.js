@@ -14,8 +14,8 @@ import Widget from './Widget';
 			embedding: false,
 			header: true,
 			footer: true,
-			baseURL: 'https://api.dev.app.sstrader.com',
-			model: 'sstrader-2', // <-- set default model here
+                        baseURL: 'https://api.example.com',
+                        model: 'example-model', // <-- set default model here
 			metadata: null,
 			cookieAuth: false, // <-- default property for cookie-based auth
 		};
