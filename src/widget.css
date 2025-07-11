@@ -2,8 +2,8 @@
     position: fixed;
     bottom: 20px;
     right: 20px;
-    width: 280px;
-    height: 500px;
+    /* width: 280px;
+    height: 500px; */
 }
 
 .hw-widget {
@@ -27,6 +27,8 @@
     background-color: #fff;
     font-size: 14px;
     line-height: 20px;
+    width: 280px;
+    height: 500px;
 }
 
 .hw-header {
@@ -373,7 +375,7 @@
 }
 
 @media (max-width: 500px) {
-    .hw-widget-root {
+    .hw-widget.open {
         position: fixed;
         inset: 0;
         width: 100vw !important;

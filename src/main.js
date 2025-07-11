@@ -7,9 +7,9 @@ import Widget from './Widget';
 
 	function getDefaultConfig() {
 		return {
-			minimized: false,
+			minimized: true,
 			css_url: ['/widget.css'],
-			api_key: 'TEST_AaBbCcDdEe123456789',
+			api_key: '',
 			globalName: o || 'SST',
 			embedding: false,
 			header: true,
@@ -17,6 +17,7 @@ import Widget from './Widget';
 			baseURL: 'https://api.dev.app.sstrader.com',
 			model: 'sstrader-2', // <-- set default model here
 			metadata: null,
+			cookieAuth: false, // <-- default property for cookie-based auth
 		};
 	}
 

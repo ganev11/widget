@@ -104,15 +104,28 @@ export default function Widget(config) {
 			if (config.metadata != null) {
 				body.metadata = config.metadata;
 			}
-			const res = await fetch(`${config.baseURL}/api/v1/chat/completions?api_key=${config.api_key}`, {
+
+			// Build URL
+			let url = `${config.baseURL}/api/v1/chat/completions`;
+			if (config.api_key) {
+				url += `?api_key=${config.api_key}`;
+			}
+
+			// Build fetch options
+			const fetchOptions = {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					//'Authorization': `Bearer ${API_KEY}`,
+					// 'Authorization': `Bearer ${API_KEY}`,
 				},
 				body: JSON.stringify(body),
 				signal: abortCtrl.current.signal,
-			});
+			};
+			if (config.cookieAuth) {
+				fetchOptions.credentials = 'include';
+			}
+
+			const res = await fetch(url, fetchOptions);
 			const reader = res.body.getReader();
 			const decoder = new TextDecoder();
 			let buffer = '';

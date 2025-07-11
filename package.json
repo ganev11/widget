@@ -10,7 +10,7 @@
 	"dependencies": {
 		"@nanostores/persistent": "^1.0.0",
 		"@nanostores/preact": "^1.0.0",
-		"css-select": "5.2.0",
+		"css-select": "6.0.0",
 		"marked": "^16.0.0",
 		"nanostores": "^1.0.1",
 		"preact": "^10.25.3"
