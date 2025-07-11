@@ -71,3 +71,12 @@ Additional options include:
 - `noCredits` – set to `true` to hide the "Powered by" footer.
 
 Use these options to tailor the widget to your application.
+
+## Integrations
+### Astro Framework
+
+You can easily integrate the widget into an Astro project using the provided Preact component. See the integration guide for details:
+
+- [Astro Integration Example](./docs/integrations/astro/README.md)
+
+This example demonstrates how to use the `WidgetLoader` component to load and configure the chat widget in Astro with Preact support.
