@@ -52,3 +52,12 @@ export function toMessagesArray(messages) {
     }
     return result;
 }
+
+export function getFirstResponseId(messages) {
+    for (const msg of messages) {
+        if (msg && msg.response_id) {
+            return msg.response_id;
+        }
+    }
+    return null;
+}

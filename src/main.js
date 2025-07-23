@@ -17,6 +17,8 @@ import Widget from './Widget';
 			baseURL: 'https://api.dev.app.sstrader.com',
 			model: 'sstrader-2', // <-- set default model here
 			metadata: null,
+			previous_response_id: null,
+			bookmaker_id: null, // for future use
 			cookieAuth: false, // <-- default property for cookie-based auth
 		};
 	}

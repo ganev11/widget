@@ -4,55 +4,17 @@ import { Header } from './components/Header';
 import { Input } from './components/Input';
 import { Messages } from './components/Messages';
 import { Close } from './components/Close';
-import { messageReducer, toMessagesArray } from './utils';
+import { messageReducer, toMessagesArray, getFirstResponseId } from './utils';
 import './widget.css';
 import { messagesStore as defaultMessageStore } from './messagesStore';
 import { atom } from 'nanostores';
 import { useStore } from '@nanostores/preact';
 import { WidgetButton } from './components/WidgetButton';
 import { Footer } from './components/Footer';
-import { act } from 'preact/test-utils';
+import { getDefaultAssistantMessage } from './components/defaultAssistantMessage.js';
 
 export const widgetStatus = atom('idle');
 export const widgetReasons = atom([]);
-
-function getDefaultAssistantMessage(config) {
-    if (config && config.defaultAssistantMessage) {
-        const { content, actions } = config.defaultAssistantMessage;
-        let selectedActions = actions;
-        if (Array.isArray(actions) && actions.length > 3) {
-            // Pick 3 random questions
-            selectedActions = actions
-                .slice() // copy
-                .sort(() => Math.random() - 0.5)
-                .slice(0, 3);
-        }
-        return {
-            role: 'welcome',
-            content: content || 'Hello! How can I help you?',
-            actions: selectedActions || []
-        };
-    }
-    // fallback to hardcoded default
-    return {
-        role: 'welcome',
-        content: 'Hello! How can I help you?',
-        actions: [
-            {
-                type: 'question',
-                text: 'Predict top football match from Sweden.'
-            },
-            {
-                type: 'question',
-                text: "Predict next match for Malmo"
-            },
-            {
-                type: 'question',
-                text: "Show me the chances for Belgium vs. Wales"
-            }
-        ]
-    };
-}
 
 export default function Widget(config) {
 	const messagesStore = config.messageStore || defaultMessageStore;
@@ -99,6 +61,7 @@ export default function Widget(config) {
 			const body = {
 				model: config.model,
 				messages: [...toMessagesArray(messages), question],
+				previous_response_id: getFirstResponseId(messages),
 				stream: true,
 			};
 			if (config.metadata != null) {
@@ -107,16 +70,13 @@ export default function Widget(config) {
 
 			// Build URL
 			let url = `${config.baseURL}/api/v1/chat/completions`;
-			if (config.api_key) {
-				url += `?api_key=${config.api_key}`;
-			}
 
 			// Build fetch options
 			const fetchOptions = {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					// 'Authorization': `Bearer ${API_KEY}`,
+					'Authorization': `Bearer ${config.api_key}`,
 				},
 				body: JSON.stringify(body),
 				signal: abortCtrl.current.signal,
@@ -142,12 +102,12 @@ export default function Widget(config) {
 
 				for (const line of lines) {
 					if (!line.startsWith('data: ')) continue;
-			
+
 					const payload = line.slice(6).trim();
 					//console.log('payload', payload);
 					if (payload === '[DONE]') {
 						//console.log('Stream finished with [DONE]');
-						console.log(`message`, message);
+						//console.log(`message`, message);
 						return;
 					}
 
@@ -155,6 +115,10 @@ export default function Widget(config) {
 					message = messageReducer(message, msg);
 					//console.log(msg);
 
+					// Store response_id from SSE event id
+					if (msg.id) {
+						message.response_id = msg.id;
+					}
 					//if (msg.choices?.[0]?.delta?.content) {
 					if (msg.choices?.[0]?.delta) {
 						onToken(msg.choices[0]);
@@ -211,14 +175,14 @@ export default function Widget(config) {
 		}
 		if (delta?.actions) {
 			setActions(prev => {
-				const updatedActions = [...prev, JSON.parse(delta.actions)];
+				const updatedActions = [...prev, delta.actions];
 				actionsRef.current = updatedActions;
 				console.log('Updated actions:', updatedActions);
 				return updatedActions;
 			});
 		}
 		if (delta?.reason) {
-			widgetReasons.set([...widgetReasons.get(), JSON.parse(delta.reason)]);
+			widgetReasons.set([...widgetReasons.get(), delta.reason]);
 			console.log(`reason`, delta?.reason);
 		}
 	}
@@ -227,7 +191,13 @@ export default function Widget(config) {
 		setMessages(old => {
 			const msgs = [...old];
 			// Add accumulated actions to the last assistant message
-			msgs[msgs.length - 1] = { ...message, isStreaming: true, role: 'assistant', actions: actionsRef.current };
+			msgs[msgs.length - 1] = { 
+				...message,
+				isStreaming: true,
+				role: 'assistant',
+				reason: widgetReasons.get(),
+				actions: actionsRef.current
+			};
 			messagesStore.set(msgs);
 			console.log('Final assistant message:', msgs[msgs.length - 1]);
 			return msgs;
