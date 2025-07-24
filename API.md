@@ -17,15 +17,16 @@ The Widget API provides a streaming chat completion endpoint for integrating con
 {
   "model": "<model_name>",
   "messages": [
-    // ...previous messages
     { "role": "user", "content": "<your question>" },
   ],
+  "previous_response_id": null,
   "stream": true,
   "metadata": { /* optional */ }
 }
 ```
 - `model`: The model to use for completion.
 - `messages`: Array of message objects (role: 'user', 'assistant', etc.).
+- `previous_response_id`: Id of the last conversation (resp_abcd1234 or null if this is your first question)
 - `stream`: Set to `true` to enable Server-Sent Events (SSE) streaming.
 - `metadata`: Optional metadata to send with the request.
 
@@ -40,35 +41,23 @@ Authorization: Bearer <YOUR_API_KEY>
 ---
 
 ## Streaming Response
-The response is streamed using SSE. Each chunk is sent as a line prefixed with `data: `.
+The response is streamed using SSE ([Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)). Each chunk is sent as a line prefixed with `data: `.
 
 **Note:** To process streamed chunks and accumulate the final message, you can use the `messageReducer` function from `utils.js`.
 
 ### Example SSE Response
 ```
 event: message
-data: {"choices":[{"index":0,"delta":{"reason":"{\"text\":\"Thinking...\"}\n"},"logprobs":null,"finish_reason":null}]}
+data: {"id":"resp_Ex3lWohFjJ","object":"chat.completion.chunk","created":1753350448,"model":"sstrader-2","choices":[{"index":0,"delta":{"reason":{"text":"Thinking..."}},"logprobs":null,"finish_reason":null}]}
 
 event: message
-data: {"id":"chatcmpl-PyoEx6LNsKioOF1fTrxGDnerQKnJ","object":"chat.completion.chunk","created":1752239712,"model":"sstrader-2","service_tier":"default","system_fingerprint":"fp","choices":[{"index":0,"delta":{},"logprobs":null,"finish_reason":null}],"usage":null}
+data: {"id":"resp_Ex3lWohFjJ","object":"chat.completion.chunk","created":1753350448,"model":"sstrader-2","choices":[{"index":0,"delta":{},"logprobs":null,"finish_reason":null}]}
 
 event: message
-data: {"id":"chatcmpl-PyoEx6LNsKioOF1fTrxGDnerQKnJ","object":"chat.completion.chunk","created":1752239712,"model":"sstrader-2","service_tier":"default","system_fingerprint":"fp","choices":[{"index":0,"delta":{"role":"assistant","content":"Hello! How can I assist you with sports today?"},"logprobs":null,"finish_reason":null}],"usage":null}
+data: {"id":"resp_Ex3lWohFjJ","object":"chat.completion.chunk","created":1753350448,"model":"sstrader-2","choices":[{"index":0,"delta":{"content":"Hello! How can I assist you with sports today?"},"logprobs":null,"finish_reason":null}]}
 
 event: message
-data: {"choices":[{"index":0,"delta":{"reason":"{\"text\":\"Extracting related bets from conversation...\"}\n"},"logprobs":null,"finish_reason":null}]}
-
-event: message
-data: {"choices":[{"index":0,"delta":{"reason":"{\"text\":\"Generation related actions\"}\n"},"logprobs":null,"finish_reason":null}]}
-
-event: message
-data: {"choices":[{"index":0,"delta":{"actions":"{\"type\":\"question\",\"text\":\"Show me the chances for over 2.5 goals between Team A and Team B\"}"},"logprobs":null,"finish_reason":null}]}
-
-event: message
-data: {"choices":[{"index":0,"delta":{"actions":"{\"type\":\"question\",\"text\":\"Tell me how many corners are expected for Team A vs Team B\"}"},"logprobs":null,"finish_reason":null}]}
-
-event: message
-data: {"id":"chatcmpl-PyoEx6LNsKioOF1fTrxGDnerQKnJ","object":"chat.completion.chunk","created":1752239712,"model":"sstrader-2","service_tier":"default","system_fingerprint":"fp","choices":[{"index":0,"delta":{},"logprobs":null,"finish_reason":"stop"}],"usage":null}
+data: {"id":"resp_Ex3lWohFjJ","object":"chat.completion.chunk","created":1753350448,"model":"sstrader-2","choices":[{"index":0,"delta":{},"logprobs":null,"finish_reason":"stop"}]}
 
 event: message
 data: [DONE]
@@ -77,14 +66,11 @@ data: [DONE]
 ### Chunk Format
 ```
 {
-    "id": "<random_id>",
+    "id": "<resp_id>",
     "object": "chat.completion.chunk",
     "created": <unix_timestamp>,
     "model": "<model_name>",
-    "service_tier": "default",
-    "system_fingerprint": "fp",
     "choices": [{ "index": 0, "delta": {}, "logprobs": null, "finish_reason": null }],
-    "usage": null
 };
 ```
 - `delta`: Contains incremental content, actions, or reasons.
@@ -104,6 +90,7 @@ const body = {
   messages: [
     { role: 'user', content: 'Hello, who won the last match?' }
   ],
+  previous_response_id: 'resp_Ex3lWohFjJ'
   stream: true,
   metadata: { /* optional */ }
 };

@@ -1,10 +1,8 @@
 import { useEffect, useRef } from "preact/hooks";
 import { widgetStatus } from "../Widget";
-//import { messagesStore } from "../messagesStore";
 import { useStore } from "@nanostores/preact";
 
 export function Actions({ messages, send }) {
-	//const messages = useStore(messagesStore);
     const message = messages[messages.length - 1] || null;
 
     const actions = message?.actions || [];
@@ -35,7 +33,6 @@ function Action({ action, send }) {
         );
     }
     if (action.type === 'selection') {
-        console.log('Action selection:', action);
         const odd = (action.data.odds[0]) ? action.data.odds[0].value : '';
 
         return (

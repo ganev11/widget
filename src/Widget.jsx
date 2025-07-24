@@ -11,7 +11,7 @@ import { atom } from 'nanostores';
 import { useStore } from '@nanostores/preact';
 import { WidgetButton } from './components/WidgetButton';
 import { Footer } from './components/Footer';
-import { getDefaultAssistantMessage } from './components/defaultAssistantMessage.js';
+import { getDefaultAssistantMessage } from './defaultAssistantMessage.js';
 
 export const widgetStatus = atom('idle');
 export const widgetReasons = atom([]);
