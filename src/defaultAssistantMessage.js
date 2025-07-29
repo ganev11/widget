@@ -27,11 +27,11 @@ export function getDefaultAssistantMessage(config) {
 			},
 			{
 				type: 'question',
-				text: "Predict next match for Malmo"
+				text: "predict Panathinaikos - Rangers"
 			},
 			{
 				type: 'question',
-				text: "Show me the chances for Belgium vs. Wales"
+				text: "Show me the chances for Hacken vs Anderlecht that both teams will score"
 			}
 		]
 	};
