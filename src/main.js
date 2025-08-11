@@ -25,10 +25,13 @@ import Widget from './Widget';
 
 	let config = getDefaultConfig();
 
-	// mount only once
+	// mount lifecycle state
 	let mounted = false;
 	let container = null;
 	let shadowRoot = null;
+	let retryTimer = null;
+	let retryCount = 0;
+	const MAX_RETRY = 50; // ~2.5s at 50ms
 	let globalName = config.globalName;
 
 	// core handler
@@ -56,52 +59,60 @@ import Widget from './Widget';
 
 	function mount() {
 		if (mounted) return;
-		mounted = true;
 
 		// 1) create or use host element
+		let host = null;
 		if (config.target) {
 			if (typeof config.target === 'string') {
-				container = d.querySelector(config.target);
+				host = d.querySelector(config.target);
 			} else {
-				container = config.target;
+				host = config.target;
 			}
-			if (!container) {
-				console.warn('Widget target not found:', config.target);
-				return;
+			if (!host) {
+				// target may not exist yet due to async layout/hydration; retry briefly
+				if (retryCount < MAX_RETRY) {
+					retryCount++;
+					retryTimer = setTimeout(mount, 50);
+				} else {
+					console.warn('Widget target not found (giving up):', config.target);
+				}
+				return; // do not set mounted; allow retry later
 			}
 		} else {
-			container = d.createElement('div');
-			container.id = `hw-widget-root-${globalName}`;
-			container.className = 'hw-widget-root';
-			d.body.appendChild(container);
+			host = d.createElement('div');
+			host.id = `hw-widget-root-${globalName}`;
+			host.className = 'hw-widget-root';
+			d.body.appendChild(host);
 		}
 
 		// 2) attach an open shadow root
-		if (container.attachShadow) {
-			shadowRoot = container.shadowRoot || container.attachShadow({ mode: 'open' });
-		} else {
-			shadowRoot = container;
-		}
+		const root = host.attachShadow ? (host.shadowRoot || host.attachShadow({ mode: 'open' })) : host;
 
 		// 3) inject external CSS into shadow root
 		if (config.css_url) {
-			if (Array.isArray(config.css_url)) {
-				config.css_url.forEach(url => {
-					const link = d.createElement('link');
-					link.setAttribute('rel', 'stylesheet');
-					link.setAttribute('href', url);
-					shadowRoot.appendChild(link);
-				});
-			} else {
+			const urls = Array.isArray(config.css_url) ? config.css_url : [config.css_url];
+			urls.forEach(url => {
 				const link = d.createElement('link');
 				link.setAttribute('rel', 'stylesheet');
-				link.setAttribute('href', config.css_url);
-				shadowRoot.appendChild(link);
-			}
+				link.setAttribute('href', url);
+				root.appendChild(link);
+			});
 		}
 
 		// 4) initial render
-		update();
+		try {
+			render(
+				h(Widget, config),
+				root
+			);
+		} finally {
+			// update lifecycle state only after we attempted to render
+			container = host;
+			shadowRoot = root;
+			mounted = true;
+			retryCount = 0;
+			if (retryTimer) { clearTimeout(retryTimer); retryTimer = null; }
+		}
 	}
 
 	function update() {
@@ -114,9 +125,21 @@ import Widget from './Widget';
 	}
 
 	function destroy() {
-		if (container && container.parentNode && !config.target) {
-			container.remove();
+	// clear any pending retries
+	if (retryTimer) { try { clearTimeout(retryTimer); } catch (e) {} retryTimer = null; }
+	retryCount = 0;
+
+	// 1) Unmount Preact tree
+		if (shadowRoot) {
+			try { render(null, shadowRoot); } catch (e) {}
+			// 2) Clear shadow DOM content to remove injected styles and DOM
+			try { while (shadowRoot.firstChild) shadowRoot.removeChild(shadowRoot.firstChild); } catch (e) {}
 		}
+		// 3) Remove dynamically-created host (only if we created it)
+		if (container && container.parentNode && !config.target) {
+			try { container.remove(); } catch (e) {}
+		}
+
 		mounted = false;
 		container = null;
 		shadowRoot = null;
