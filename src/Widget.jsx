@@ -17,6 +17,7 @@ export const widgetStatus = atom('idle');
 export const widgetReasons = atom([]);
 
 export default function Widget(config) {
+	const dispatch = config.__dispatch || (()=>{});
 	const messagesStore = config.messageStore || defaultMessageStore;
 	const [open, setOpen] = useState(!config.minimized);
 	const [messages, setMessages] = useState(() => {
@@ -156,6 +157,7 @@ export default function Widget(config) {
 		setDraft('');
 		widgetStatus.set('sending');
 		addMessage({ role: 'assistant', content: '', isStreaming: true, actions: [] });
+		dispatch('sst:message:send', { question });
 
 		ask(question, onToken, onDone);
 	};
@@ -172,6 +174,7 @@ export default function Widget(config) {
 				updated[lastIdx] = lastMsg;
 				return updated;
 			});
+			dispatch('sst:message:token', { token: delta.content });
 		}
 		if (delta?.actions) {
 			setActions(prev => {
@@ -206,6 +209,7 @@ export default function Widget(config) {
 		actionsRef.current = [];
 		widgetStatus.set('idle');
 		abortCtrl.current = null;
+		dispatch('sst:message:done', { message });
 	}
 
 	const cancel = () => {
@@ -226,6 +230,7 @@ export default function Widget(config) {
 			return trimmed;
 		});
 		widgetStatus.set('idle');
+		dispatch('sst:message:cancel');
 	}
 
 	// Detect embedding mode

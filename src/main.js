@@ -5,6 +5,11 @@ import Widget from './Widget';
 	// Grab existing queue or make empty
 	const queue = (w[o] && w[o].q) || [];
 
+	// Native CustomEvent dispatcher
+	function dispatch(eventName, detail) {
+		w.dispatchEvent(new CustomEvent(eventName, { detail }));
+	}
+
 	function getDefaultConfig() {
 		return {
 			minimized: true,
@@ -34,12 +39,14 @@ import Widget from './Widget';
 	const MAX_RETRY = 50; // ~2.5s at 50ms
 	let globalName = config.globalName;
 
-	// core handler
+	// core handler (only commands relevant to widget lifecycle)
 	function widgetFn(cmd, opts = {}) {
 		if (cmd === 'init') {
 			config = Object.assign(getDefaultConfig(), opts);
 			globalName = config.globalName || o || 'SST';
 			w[globalName] = widgetFn; // ensure global is always set to the right name
+			// provide dispatch helper to internal components
+			config.__dispatch = dispatch;
 			mount();
 		}
 		if (cmd === 'destroy') {
@@ -112,6 +119,7 @@ import Widget from './Widget';
 			mounted = true;
 			retryCount = 0;
 			if (retryTimer) { clearTimeout(retryTimer); retryTimer = null; }
+			dispatch('sst:init', { config });
 		}
 	}
 
@@ -143,6 +151,7 @@ import Widget from './Widget';
 		mounted = false;
 		container = null;
 		shadowRoot = null;
+		dispatch('sst:destroy');
 	}
 
 	// replace global API and replay queued calls

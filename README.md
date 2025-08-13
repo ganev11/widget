@@ -80,3 +80,41 @@ You can easily integrate the widget into an Astro project using the provided Pre
 - [Astro Integration Example](./docs/integrations/astro/README.md)
 
 This example demonstrates how to use the `WidgetLoader` component to load and configure the chat widget in Astro with Preact support.
+
+## Events (DOM CustomEvent API)
+
+The widget now dispatches native `CustomEvent`s on `window`. Listen using standard `addEventListener`.
+
+### Example
+```js
+window.addEventListener('sst:init', (e) => {
+  console.log('Widget initialized', e.detail.config);
+});
+window.addEventListener('sst:message:token', (e) => {
+  console.log('Token chunk', e.detail.token);
+});
+```
+
+### Event Names & Details
+
+| Event | `event.detail` |
+|-------|----------------|
+| `sst:init` | `{ config }` |
+| `sst:destroy` | `undefined` |
+| `sst:typing` | `{ value }` current textarea value |
+| `sst:typing:submit` | `undefined` |
+| `sst:message:send` | `{ question }` user message object |
+| `sst:message:token` | `{ token }` streamed content token |
+| `sst:message:done` | `{ message }` final assistant message object |
+| `sst:message:cancel` | `undefined` |
+
+Event names are prefixed with `sst:` to avoid collisions.
+
+### Ordering / Timing
+If you attach listeners after `sst:init` has already fired you won't get a replay. Add your listeners before calling `SST('init', ...)` or as early as possible.
+
+### Custom Events From Host
+If needed you can dispatch your own namespaced events:
+```js
+window.dispatchEvent(new CustomEvent('sst:host:ping', { detail: { t: Date.now() }}));
+```

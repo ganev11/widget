@@ -37,7 +37,9 @@ export function Input({ config, status, draft, setDraft, send, cancel }) {
     }, [status]);
 
     const handleInput = e => {
-        setDraft(e.currentTarget.value);
+        const value = e.currentTarget.value;
+        setDraft(value);
+        if (config.__dispatch) config.__dispatch('sst:typing', { value });
     };
 
     const handleKeyDown = e => {
@@ -45,6 +47,7 @@ export function Input({ config, status, draft, setDraft, send, cancel }) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             send();
+            if (config.__dispatch) config.__dispatch('sst:typing:submit');
         }
     };
 
