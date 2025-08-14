@@ -83,38 +83,46 @@ This example demonstrates how to use the `WidgetLoader` component to load and co
 
 ## Events (DOM CustomEvent API)
 
-The widget now dispatches native `CustomEvent`s on `window`. Listen using standard `addEventListener`.
+The widget dispatches native `CustomEvent`s on `window`. The event name prefix equals the configured `globalName` (default `SST`). This allows multiple widget instances with different `globalName`s to coexist without event collisions.
 
 ### Example
+If you initialize with `SST('init', { globalName: 'SST' })` (default):
 ```js
-window.addEventListener('sst:init', (e) => {
+window.addEventListener('SST:init', (e) => {
   console.log('Widget initialized', e.detail.config);
 });
-window.addEventListener('sst:message:token', (e) => {
+window.addEventListener('SST:message:token', (e) => {
   console.log('Token chunk', e.detail.token);
 });
 ```
 
-### Event Names & Details
+If you initialize a second instance under `CHAT` (`CHAT('init', { globalName: 'CHAT' })`), listen with:
+```js
+window.addEventListener('CHAT:message:done', (e) => {
+  console.log('CHAT finished', e.detail.message);
+});
+```
 
-| Event | `event.detail` |
-|-------|----------------|
-| `sst:init` | `{ config }` |
-| `sst:destroy` | `undefined` |
-| `sst:typing` | `{ value }` current textarea value |
-| `sst:typing:submit` | `undefined` |
-| `sst:message:send` | `{ question }` user message object |
-| `sst:message:token` | `{ token }` streamed content token |
-| `sst:message:done` | `{ message }` final assistant message object |
-| `sst:message:cancel` | `undefined` |
+### Event Suffixes & Details
 
-Event names are prefixed with `sst:` to avoid collisions.
+Prefix = `<globalName>`; full event is `<globalName>:<suffix>`.
+
+| Suffix | Detail |
+|--------|--------|
+| `init` | `{ config }` |
+| `destroy` | `undefined` |
+| `typing` | `{ value }` current textarea value |
+| `typing:submit` | `undefined` |
+| `message:send` | `{ question }` user message object |
+| `message:token` | `{ token }` streamed content token |
+| `message:done` | `{ message }` final assistant message object |
+| `message:cancel` | `undefined` |
 
 ### Ordering / Timing
-If you attach listeners after `sst:init` has already fired you won't get a replay. Add your listeners before calling `SST('init', ...)` or as early as possible.
+Attach listeners before calling `<globalName>('init', ...)` if you need the `init` event.
 
-### Custom Events From Host
-If needed you can dispatch your own namespaced events:
+### Custom Host Events
+Dispatch your own namespaced events if desired:
 ```js
-window.dispatchEvent(new CustomEvent('sst:host:ping', { detail: { t: Date.now() }}));
+window.dispatchEvent(new CustomEvent('SST:host:ping', { detail: { t: Date.now() }}));
 ```

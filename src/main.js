@@ -45,8 +45,13 @@ import Widget from './Widget';
 			config = Object.assign(getDefaultConfig(), opts);
 			globalName = config.globalName || o || 'SST';
 			w[globalName] = widgetFn; // ensure global is always set to the right name
-			// provide dispatch helper to internal components
+			// compute event prefix per instance (exact globalName)
+			config.__eventPrefix = globalName; // e.g. 'SST'
+			// provide dispatch + emit helpers to internal components
 			config.__dispatch = dispatch;
+			config.__emit = (suffix, detail) => {
+				dispatch(`${config.__eventPrefix}:${suffix}`, detail);
+			};
 			mount();
 		}
 		if (cmd === 'destroy') {
@@ -119,7 +124,7 @@ import Widget from './Widget';
 			mounted = true;
 			retryCount = 0;
 			if (retryTimer) { clearTimeout(retryTimer); retryTimer = null; }
-			dispatch('sst:init', { config });
+			dispatch(`${config.__eventPrefix}:init`, { config });
 		}
 	}
 
@@ -151,7 +156,7 @@ import Widget from './Widget';
 		mounted = false;
 		container = null;
 		shadowRoot = null;
-		dispatch('sst:destroy');
+		dispatch(`${config.__eventPrefix}:destroy`);
 	}
 
 	// replace global API and replay queued calls
