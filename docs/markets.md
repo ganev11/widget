@@ -37,4 +37,9 @@ This document maps numeric market codes to human-readable market names used by t
 | 16 | 1st Half Asian Corners |
 | 17 | Correct Score — 1st Half |
 | 22 | n-Goal — Next goal |
-
+| 101 | 3Way result - Corners
+| 102 | Asian corners handicap
+| 103 | Asian corners line
+| 201 | 3Way result - Yellow cards
+| 202 | Asian handicap yellow cards
+| 203 | Asian yellow card line
