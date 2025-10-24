@@ -12,6 +12,8 @@ Authentication
 Query Parameters
 - `market_id` (optional): comma-separated list of market IDs to filter bets, e.g. `market_id=1,3`.
 - `status` (optional): comma-separated list of insight statuses (e.g. `NS`, `LIVE`, `HT`).
+- `is_live` (optional): `is_live=1` filter only events that are live now. default 0 (show all insights).
+- `expired` (optional): `expired=1` include expired insights (content is outdate). default 0 (show only valid). Can be used for sync your backend.
 - `league_id` (optional): comma-separated list of league IDs to filter insights.
 - `fixture_id` (optional): single fixture ID to restrict results to a fixture.
 - `league_level` (optional): numeric league level to filter by.
