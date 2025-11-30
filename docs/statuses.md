@@ -14,7 +14,7 @@
 | `HT` | Match is at half-time. |
 | `INPLAY_1ST_HALF` | First half in progress. |
 | `INPLAY_2ND_HALF` | Second half in progress. |
-| `INPLAY_ET` | Extra time (first half) is in progress. |
+| `INPLAY_ET` | Extra time is in progress. |
 | `INPLAY_PENALTIES` | Penalty shootout is in progress. |
 | `INTERRUPTED` | Match temporarily interrupted (e.g., weather). |
 | `NOT_STARTED` | Fixture hasn't started. |
