@@ -1,45 +1,73 @@
+## Odds
+
+```json
+{
+    "odd_id": 72230784,
+    "fixture_id": 945434,
+    "market_id": 3,
+    "bookmaker_id": 2,
+    "is_live": 0,
+    "label_id": 2,
+    "value": 1.9,
+    "handicap": 2.25,
+    "line": 2.25,
+    "last_update": 1767527587,
+    "suspend": 0,
+    "sp": 1.725,
+    "home_score": 0,
+    "away_score": 0,
+    "status": 0,
+    "raw": {}
+}
+```
+
 ## Market codes
 
-This document maps numeric market codes to human-readable market names used by the widget.
+This table maps market_id and their labels.
 
-| Code | Market |
+| market_id | Market | label_id |
+|---:|---|---|
+| 1 | 3Way result — Moneyline - 1x2 | 1 Home, 2 Away, 0 Draw
+| 2 | Asian handicap + Alternative Asian handicap | 1 Home, 2 Away
+| 3 | Goal line + Alternative Goal line | 1 Under, 2 Over
+| 4 | Match Goals (European style) + Alternative Match Goals | 1 Under, 2 Over
+| 5 | Corners — Asian Handicap | 1 Home, 2 Away
+| 6 | Asian Total Corners | 1 Under, 2 Over
+| 7 | Correct Score | 1 + home score + away score. 100 - 0:0, 111 - 1:1, 142 - 4:2 etc.
+| 11 | 1st Half 3Way result — Moneyline - 1x2 | 1 Home, 2 Away, 0 Draw
+| 12 | 1st Half Asian handicap + Alternative Asian handicap | 1 Home, 2 Away
+| 13 | 1st Half Goal line + Alternative Goal line | 1 Under, 2 Over
+| 16 | 1st Half Asian Total Corners | 1 Under, 2 Over
+| 17 | 1st Half Correct Score | 1 + home score + away score. 100 - 0:0, 111 - 1:1, 142 - 4:2 etc.
+| 22 | n-Goal — Next goal | 1 Home, 2 Away, 0 Draw. n-Goal is stored in line property. line 1 - 1st goal, 2 - 2nd, etc.
+| 50 | Draw no bet | 1 Home, 2 Away
+| 51 | HT/FT | 111 1/1, 110 1/X, 112 1/2, 101 X/1, 100 X/X, 102 X2, 121 2/1, 120 2/X, 122 2/2
+| 52 | Odd/Even | 1 Odd, 2 Even
+| 53 | BTTS (Both Teams To Score) | 1 Yes, 2 No
+| 54 | 1st Half BTTS | 1 Yes, 2 No
+| 55 | 2nd Half BTTS | 1 Yes, 2 No
+| 56 | Team Corners | 11 Home Under, 12 Home Over, 21 Away Under, 22 Away Over
+| 57 | Team Total Goals | 11 Home Under, 12 Home Over, 21 Away Under, 22 Away Over
+| 58 | Double chance | 2 Draw/Away, 10 Home/Draw, 12 Home/Away
+| 59 | Clean Sheet | 11 Home Yes, 12 Home No, 21 Away Yes, 22 Away No
+| 203 | Asian Total Cards line | 1 Under, 2 Over
+
+## Bookmakers
+
+Odds are only for reference.
+
+| bookmaker_id | Description |
 |---:|---|
-| 1 | 3Way result — Moneyline |
-| 2 | Asian handicap |
-| 2 | Alternative Asian handicap |
-| 3 | Goal line |
-| 3 | Alternative Goal line |
-| 4 | Match Goals (Under / Over — European style) |
-| 4 | Alternative Match Goals |
-| 12 | Asian Handicap — First Half |
-| 12 | Alternative 1st Half Asian Handicap |
-| 13 | Goal line — 1st Half |
-| 13 | Alternative 1st Half Goal line |
-| 11 | HT 3Way result — HT Moneyline |
-| 11 | LIVE — HT 3Way result (HT Moneyline) |
-| 50 | Draw no bet |
-| 51 | HT/FT |
-| 52 | Odd/Even |
-| 53 | BTTS (Both Teams To Score) |
-| 54 | BTTS — 1st Half |
-| 55 | BTTS — 2nd Half |
-| 56 | Team Corners |
-| 57 | Team Total Goals |
-| 57 | Total — Home |
-| 57 | Total — Away |
-| 58 | Double chance |
-| 59 | Clean Sheet — Home |
-| 59 | Clean Sheet — Away |
-| 5 | Corners — Asian Handicap |
-| 6 | Asian Total Corners |
-| 6 | Asian Corners |
-| 7 | Correct Score |
-| 16 | 1st Half Asian Corners |
-| 17 | Correct Score — 1st Half |
-| 22 | n-Goal — Next goal |
-| 101 | 3Way result - Corners
-| 102 | Asian corners handicap
-| 103 | Asian corners line
-| 201 | 3Way result - Yellow cards
-| 202 | Asian handicap yellow cards
-| 203 | Asian yellow card line
+| 2 | European style soft bookmakers averages |
+| 3 | Asian style bookmakers |
+
+## Status
+
+| Status | Description |
+|---:|---|
+| -3 | Void |
+| -2 | Half Lost |
+| -1 | Lost |
+| 0 | Pending |
+| 1 | Won |
+| 2 | Half Won |
