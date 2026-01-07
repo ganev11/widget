@@ -61,6 +61,29 @@ Odds are only for reference.
 | 2 | European style soft bookmakers averages |
 | 3 | Asian style bookmakers |
 
+### European vs Asian Goal Lines (Simple)
+
+**Asian goal line**
+- Uses **0.25 steps** (1.0, 1.25, 1.75)
+- Can be **half win / half loss**
+- Lines stay close to the **main line**
+- Odds are usually **near even**
+
+**European goal line**
+- Uses **half goals only** (0.5, 1.5, 2.5)
+- **Win or lose only**, no half results
+- Can offer lines **far from the main line**
+- Allows **much higher odds**
+
+**Example**
+- Score 0–0  
+- Asian: near main line  
+- European: over 5.5 possible with very high odds
+
+**Note**
+- Same line (e.g. over 2.5) can have **different odds** in Asian vs European markets
+
+
 ## Status
 
 | Status | Description |
@@ -71,3 +94,16 @@ Odds are only for reference.
 | 0 | Pending |
 | 1 | Won |
 | 2 | Half Won |
+
+## Fair Odds
+
+```json
+{
+    "market_id": 4,
+    "label_id": 1,
+    "probability": 20.07,
+    "value": 4.984,
+    "handicap": 1.5,
+    "line": 1.5
+}
+```
