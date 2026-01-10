@@ -1,81 +1,98 @@
-**Get Insights**
-
-Summary
-- Retrieve insights submitted to the insights system with optional filtering by market, league, fixture, integration, time and value ranges. Results include insight metadata and matching bets.
+**Insights**
 
 Endpoint
-- `GET /get_insights`
+- `GET /insights/get`
 
 Authentication
-- Requires an authenticated user. The endpoint reads the current user from the request context and uses `user_id` when searching. Unauthenticated requests receive `403 Unauthorized`.
+- TODO add Authentication & Error codes
 
 Query Parameters
-- `market_id` (optional): comma-separated list of market IDs to filter bets, e.g. `market_id=1,3`.
-- `status` (optional): comma-separated list of insight statuses (e.g. `NS`, `LIVE`, `HT`).
+- `market_id` (optional): comma-separated list of [markets](markets.md) IDs to filter bets, e.g. `market_id=1,3`.
+- `status` (optional): comma-separated list of insight [statuses](statuses.md).
 - `is_live` (optional): `is_live=1` filter only events that are live now. default 0 (show all insights).
 - `expired` (optional): `expired=1` include expired insights (content is outdate). default 0 (show only valid). Can be used for sync your backend.
-- `league_id` (optional): comma-separated list of league IDs to filter insights.
+- `league_id` (optional): comma-separated list of league IDs to filter insights. TODO Add Regions endpoint documentation.
 - `fixture_id` (optional): single fixture ID to restrict results to a fixture.
-- `league_level` (optional): numeric league level to filter by.
-- `integration` (optional): integration name or numeric id used to filter bets by integration.
-- `lang` (optional): language code or name (default: `English`).
-- `time_from` / `time_to` (optional): ISO datetimes to restrict insights by `date_time`.
-- `time` (optional): shorthand `time=from,to` (comma-separated).
-- `value_from` / `value_to` (optional): numeric range to filter bets' `value` (note: stored values are scaled internally).
-- `value` (optional): shorthand `value=from,to` (comma-separated).
-- `limit` (optional): max number of insights to return (default: `100`, max `1000`).
+- ~~`league_level` (optional): numeric league level to filter by. Not implemented yet!~~
+- ~~`integration` (optional): integration name or numeric id used to filter bets by integration. Not implemented yet!~~
+- `lang` (optional): language code (default: `en`). TODO Add table with supported codes.
+- ~~`time_from` / `time_to` (optional): ISO datetimes to restrict insights by `date_time`. Not tested enough!~~
+- `value_from` / `value_to` (optional): numeric range to filter bets' `value`.
+- `limit` (optional): max number of insights to return (default: `100`, max `1000`). This may be change depending on data included with insights.
 
-Examples
-- Fetch insights for markets 1 and 3 in leagues 8 and 34, only STATUS `NS`:
+Default `status`:
 ```
-GET /get_insights?market_id=1,3&league_id=8,34&status=NS
-```
-
-- Fetch insights in a time window and value range:
-```
-GET /get_insights?time_from=2025-07-27T00:00:00Z&time_to=2025-07-28T00:00:00Z&value_from=1.2&value_to=5.0
+[
+  'INPLAY_1ST_HALF',
+  'INPLAY_2ND_HALF',
+  'INPLAY_ET',
+  'INPLAY_PENALTIES',
+  'HT',
+  'EXTRA_TIME_BREAK',
+  'PEN_BREAK',
+  'NOT_STARTED'
+]
 ```
 
 Response
-- `200 OK` with JSON array of insight objects. Each insight object has the following shape:
+- `200 OK` with JSON array of insight objects. Empty array if no results. Each insight object has default fixture object (participants, scores, periods, etc...) `TODO Add documentation for fixture object!` and insight in following shape:
 
-```
-{
-  "insight_id": 123,
-  "model_id": null,
-  "sport_id": 1,
-  "user_id": 42,
-  "fixture_id": 98765,
-  "lang": "English",
-  "status": "NS",
-  "fixture": { /* optional fixture JSON as stored */ },
-  "insight": { /* insight payload as stored */ },
-  "bets": [
+```json
+"insights": [
     {
-      "bet_id": 555,
-      "market": "OVER_UNDER",
-      "selection": "OVER",
-      "line": 2.5,
-      "confidence": 84,
-      "market_id": 2,
-      "label_id": 3,
-      "odd_id": null,
-      "value": 1.234,
-      "sp": 1.234,
-      "suspend": false,
-      "in_play": false,
-      "market_text": "Total goals in the match",
-      "selection_text": "Over 3.5 goals in the match",
-      "integration": "altenar",
-      "raw_odd": { /* raw odd JSON if stored */ }
+        "id": 4310, // Internal insight identifier.
+        "user_id": 5, // Internal user identifier.
+        "model_id": 8, // Internal model identifier.
+        "job_id": 8508, // Internal job identifier.
+        "market_id": 3, // Market identifier. See [markets](markets.md) for details.
+        "value": 3.8, // Odd value (decimal).
+        "suspend": 0, // 1 if odd is suspended, 0 otherwise.
+        "sp": 1.75, // Starting price (decimal). This is the odd at the moment the bet was placed and is used for profit calculation.
+        "created_at": "2026-01-10T15:33:37.900Z",
+        "language": "en",
+        "content": {
+            "text": "OVER 2.5 is the clear outcome as both Ayr United and Airdrieonians showcase strong attacking form and defensive vulnerabilities."
+        },
+        "bet": {
+            "odd_id": 73060313, // Internal odd identifier.
+            "market_id": 3,
+            "bookmaker_id": 4,
+            "is_live": 1,
+            "label_id": 2,
+            "value": 3.8,
+            "handicap": 2.5,
+            "line": 2.5,
+            "last_update": 1768063249,
+            "suspend": 0,
+            "sp": 1.93,
+            "home_score": 0,
+            "away_score": 0,
+            "status": 0, // Odd status. 0 - pending
+            "raw": { // Holds external data for deep integration
+                "event_id": 13936816,
+                "market_id": 1339290698,
+                "selection_id": 3314639099,
+                "market_type_id": 18,
+                "selection_type_id": 12
+            }
+        }
     }
-  ],
-  "date_time": "2025-07-27T12:34:56Z",
-  "created_at": "2025-07-27T12:35:01Z"
-}
+]
 ```
 
-Errors
-- `403 Unauthorized` — request is not authenticated.
-- `400 Bad Request` — invalid query parameter formats (e.g. non-numeric `league_id` values).
-- `500 Internal Server Error` — unexpected server error during search.
+**Bet**
+- "odd_id": 73060313 - Internal odd identifier.
+- "market_id": 3 - Market identifier. See [markets](markets.md) for details.
+- "bookmaker_id": 4 - Bookmaker identifier. See [bookmakers](markets.md#bookmakers) for details.
+- "is_live": 1 - 1 if odd is for live event, 0 otherwise.
+- "label_id": 2 - Label identifier. See [markets](markets.md) for details.
+- "value": 3.8 - Odd value (decimal).
+- "handicap": 2.5 - Handicap value.
+- "line": 2.5 - Line value.
+- "last_update": 1768063249 - Last update timestamp (unix).
+- "suspend": 0 - 1 if odd is suspended, 0 otherwise.
+- "sp": 1.93 - Starting price (decimal). This is the first odd we saw for this odd.
+- "home_score": 0 - For internal use.
+- "away_score": 0 - For internal use.
+- "status": 0 - See [odds status](markets.md#status)
+
