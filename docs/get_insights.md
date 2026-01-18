@@ -4,18 +4,18 @@ Endpoint
 - `GET /insights/get`
 
 Authentication
-- TODO add Authentication & Error codes
+- [Authentication](authentication.md)
 
 Query Parameters
 - `market_id` (optional): comma-separated list of [markets](markets.md) IDs to filter bets, e.g. `market_id=1,3`.
 - `status` (optional): comma-separated list of insight [statuses](statuses.md).
 - `is_live` (optional): `is_live=1` filter only events that are live now. default 0 (show all insights).
 - `expired` (optional): `expired=1` include expired insights (content is outdate). default 0 (show only valid). Can be used for sync your backend.
-- `league_id` (optional): comma-separated list of league IDs to filter insights. TODO Add Regions endpoint documentation.
+- `league_id` (optional): comma-separated list of league IDs to filter insights. See [regions](regions.md) endpoint documentation.
 - `fixture_id` (optional): single fixture ID to restrict results to a fixture.
 - ~~`league_level` (optional): numeric league level to filter by. Not implemented yet!~~
 - ~~`integration` (optional): integration name or numeric id used to filter bets by integration. Not implemented yet!~~
-- `lang` (optional): language code (default: `en`). TODO Add table with supported codes.
+- `language` (optional): [language](languages.md) code (default: `en`). 
 - ~~`time_from` / `time_to` (optional): ISO datetimes to restrict insights by `date_time`. Not tested enough!~~
 - `value_from` / `value_to` (optional): numeric range to filter bets' `value`.
 - `limit` (optional): max number of insights to return (default: `100`, max `1000`). This may be change depending on data included with insights.
