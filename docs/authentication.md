@@ -32,5 +32,5 @@ You can also pass the API key as a URL query parameter.
 ### Request URL
 
 ```http
-https://api.sstrader.com/endpoint?api_key=YOUR_API_KEY
+https://api.sstrader.com/v1/endpoint?api_key=YOUR_API_KEY
 ```

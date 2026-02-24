@@ -28,7 +28,8 @@ Response
       },
       "country": {
         "id": 244,
-        "name": "Africa"
+        "name": "Africa",
+        "alpha3": "" // ISO Alpha-3 country code
       },
       "league": {
         "id": 381,
