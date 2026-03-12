@@ -53,6 +53,11 @@ Response
         "content": {
             "text": "OVER 2.5 is the clear outcome as both Ayr United and Airdrieonians showcase strong attacking form and defensive vulnerabilities."
         },
+        "model": {
+            "id": 20,
+            "name": "Live odds Next Goal",
+            "color": "#f36523"
+        },
         "bet": {
             "odd_id": 73060313, // Internal odd identifier.
             "market_id": 3,
@@ -74,7 +79,10 @@ Response
                 "selection_id": 3314639099,
                 "market_type_id": 18,
                 "selection_type_id": 12
-            }
+            },
+            "market_name": "Second Goal",
+            "market_description": "Which team will score the next goal",
+            "label_name": "Verona"
         }
     }
 ]
