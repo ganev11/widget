@@ -10,3 +10,4 @@ Default selected language is English.
 | `en` | English |
 | `bg` | Български |
 | `ro` | Română |
+| `es` | Español |
