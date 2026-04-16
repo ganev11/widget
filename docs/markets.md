@@ -50,7 +50,7 @@ This table maps market_id and their labels.
 | 57 | Team Total Goals | 11 Home Under, 12 Home Over, 21 Away Under, 22 Away Over
 | 58 | Double chance | 2 Draw/Away, 10 Home/Draw, 12 Home/Away
 | 59 | Clean Sheet | 11 Home Yes, 12 Home No, 21 Away Yes, 22 Away No
-| 203 | Asian Total Cards line | 1 Under, 2 Over
+| 203 | Asian Total Cards | 1 Under, 2 Over
 
 ## Bookmakers
 
